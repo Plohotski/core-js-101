@@ -224,7 +224,19 @@ function getRectangleString(width, height) {
  *
  */
 function encodeToRot13(str) {
-  return ;
+  let result = '';
+  for (let i = 0; i < str.length; i += 1) {
+    // eslint-disable-next-line max-len
+    if ((str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 77) || (str.charCodeAt(i) >= 97 && str.charCodeAt(i) <= 109)) {
+      result += String.fromCharCode(str.charCodeAt(i) + 13);
+      // eslint-disable-next-line max-len
+    } else if ((str.charCodeAt(i) >= 78 && str.charCodeAt(i) <= 90) || (str.charCodeAt(i) >= 110 && str.charCodeAt(i) <= 122)) {
+      result += String.fromCharCode(str.charCodeAt(i) - 13);
+    } else {
+      result += str[i];
+    }
+  }
+  return result;
 }
 
 /**
@@ -240,8 +252,13 @@ function encodeToRot13(str) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* value */) {
-  throw new Error('Not implemented');
+function type(value) {
+  const regex = /^\[object (\S+?)\]$/;
+  const matches = Object.prototype.toString.call(value).match(regex) || [];
+  return (matches[1] || 'undefined').toLowerCase();
+}
+function isString(value) {
+  return type(value) === 'string';
 }
 
 
@@ -269,8 +286,45 @@ function isString(/* value */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  let a = 0;
+  let b = 0;
+  if (value.length === 2) {
+    switch (value[0]) {
+      case 'A':
+        a = 0;
+        break;
+      case 'J':
+        a = 10;
+        break;
+      case 'Q':
+        a = 11;
+        break;
+      case 'K':
+        a = 12;
+        break;
+      default:
+        a = Number(value[0]) - 1;
+        break;
+    }
+  } else {
+    a = 9;
+  }
+  switch (value[value.length - 1]) {
+    case '♣':
+      b = 0;
+      break;
+    case '♦':
+      b = 1;
+      break;
+    case '♥':
+      b = 2;
+      break;
+    default:
+      b = 3;
+      break;
+  }
+  return a + 13 * b;
 }
 
 
